@@ -1165,6 +1165,7 @@ function formBuilderEventsFn() {
       //   type: 'text'
       // }],
       defaultFields: [],
+      availableFields: [],
       fieldRemoveWarn: false,
       roles: {
         1: 'Administrator'
@@ -1313,35 +1314,50 @@ function formBuilderEventsFn() {
 
     // create array of field objects to cycle through
     var frmbFields = [{
+      label: 'Mi campo prueba',
+      attrs: {
+        type: 'textarea',
+        className: 'text-area',
+        name: 'textarea',
+        onlyOnce: true,
+        serverId: '1111'
+      }
+    }, {
       label: opts.messages.textArea,
       attrs: {
         type: 'textarea',
         className: 'text-area',
-        name: 'textarea'
+        name: 'textarea',
+        onlyOnce: false
       }
     }, {
       label: opts.messages.text,
+      onlyOnce: false,
       attrs: {
         type: 'text',
         className: 'text-input',
-        name: 'text-input'
+        name: 'text-input',
+        onlyOnce: false
       }
     }, {
       label: opts.messages.select,
       attrs: {
         type: 'select',
         className: 'select',
-        name: 'select'
+        name: 'select',
+        onlyOnce: false
       }
     }, {
       label: opts.messages.radioGroup,
       attrs: {
         type: 'radio-group',
         className: 'radio-group',
-        name: 'radio-group'
+        name: 'radio-group',
+        onlyOnce: false
       }
     }, {
       label: opts.messages.paragraph,
+      onlyOnce: false,
       attrs: {
         type: 'paragraph',
         className: 'paragraph'
@@ -1351,55 +1367,63 @@ function formBuilderEventsFn() {
       attrs: {
         type: 'hidden',
         className: 'hidden-input',
-        name: 'hidden-input'
+        name: 'hidden-input',
+        onlyOnce: false
       }
     }, {
       label: opts.messages.header,
       attrs: {
         type: 'header',
-        className: 'header'
+        className: 'header',
+        onlyOnce: false
       }
     }, {
       label: opts.messages.fileUpload,
       attrs: {
         type: 'file',
         className: 'file-input',
-        name: 'file-input'
+        name: 'file-input',
+        onlyOnce: false
       }
     }, {
       label: opts.messages.dateField,
       attrs: {
         type: 'date',
         className: 'calendar',
-        name: 'date-input'
+        name: 'date-input',
+        onlyOnce: false
       }
     }, {
       label: opts.messages.checkboxGroup,
       attrs: {
         type: 'checkbox-group',
         className: 'checkbox-group',
-        name: 'checkbox-group'
+        name: 'checkbox-group',
+        onlyOnce: false
       }
     }, {
       label: opts.messages.checkbox,
       attrs: {
         type: 'checkbox',
         className: 'checkbox',
-        name: 'checkbox'
+        name: 'checkbox',
+        onlyOnce: false
       }
     }, {
       label: opts.messages.button,
       attrs: {
         type: 'button',
         className: 'button-input',
-        name: 'button'
+        name: 'button',
+        onlyOnce: false
       }
     }, {
       label: opts.messages.autocomplete,
       attrs: {
         type: 'autocomplete',
         className: 'autocomplete',
-        name: 'autocomplete'
+        name: 'autocomplete',
+        onlyOnce: false
       }
     }];
 
@@ -1429,9 +1453,14 @@ function formBuilderEventsFn() {
         'class': 'icon-' + frmbFields[i].attrs.className,
         'type': frmbFields[i].type,
         'name': frmbFields[i].className,
-        'label': frmbFields[i].label
+        'label': frmbFields[i].label,
+
+        //only once attributes
+        'data-only-once': frmbFields[i].attrs.onlyOnce,
+        'data-server-id': frmbFields[i].attrs.serverId
       });
 
+      console.log(frmbFields[i]);
       $field.data('newFieldData', frmbFields[i]);
 
       var typeLabel = _helpers.markup('span', frmbFields[i].label);
@@ -1602,6 +1631,9 @@ function formBuilderEventsFn() {
       }
 
       appendNewField(field);
+      if (field.onlyOnce) {
+        $($field).hide();
+      }
       $stageWrap.removeClass('empty');
     };
 
@@ -1738,6 +1770,7 @@ function formBuilderEventsFn() {
     var appendNewField = function appendNewField(values) {
 
       // TODO: refactor to move functions into this object
+      console.log("APPENDING FIELD!", values);
       var appendFieldType = {
         'select': appendSelectList,
         'rich-text': appendTextarea,
@@ -2039,7 +2072,9 @@ function formBuilderEventsFn() {
       var li = _helpers.markup('li', liContents, {
         'class': values.type + '-field form-field',
         'type': values.type,
-        id: lastID
+        id: lastID,
+        'data-only-once': values.onlyOnce,
+        'data-server-id': values.serverId
       }),
           $li = $(li);
 
@@ -2226,6 +2261,10 @@ function formBuilderEventsFn() {
           _helpers.save();
           if (!$sortableFields[0].childNodes.length) {
             $stageWrap.addClass('empty').attr('data-content', opts.messages.getStarted);
+          }
+
+          if ($field.data('only-once')) {
+            $('li[data-server-id=' + $field.data('server-id') + ']').show();
           }
         });
       };

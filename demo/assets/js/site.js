@@ -8,7 +8,19 @@ jQuery(document).ready(function($) {
       container: document.getElementById('rendered-form')
     },
     formBuilderOpts = {
-      fieldRemoveWarn: true
+      fieldRemoveWarn: true,
+      defaultFields: [{
+          label: 'First Name',
+          name: 'first-name',
+          required: 'true',
+          description: 'Your first name',
+          type: 'text'
+        }, {
+          label: 'Phone',
+          name: 'phone',
+          description: 'How can we reach you?',
+          type: 'text'
+        }]
     };
 
   $(template).formBuilder(formBuilderOpts);
