@@ -1314,13 +1314,30 @@ function formBuilderEventsFn() {
 
     // create array of field objects to cycle through
     var frmbFields = [{
+      label: 'Tipos de Perro',
+      attrs: {
+        name: 'tipos-perro',
+        type: 'radio-group',
+        className: 'radio-group',
+        onlyOnce: true,
+        serverId: '2222',
+        values: [{
+          label: 'et1',
+          value: 'val1'
+        }, {
+          label: 'et2',
+          value: 'val2'
+        }]
+      }
+    }, {
       label: 'Mi campo prueba',
       attrs: {
         type: 'textarea',
         className: 'text-area',
         name: 'textarea',
         onlyOnce: true,
-        serverId: '1111'
+        serverId: '1111',
+        maxlength: 255
       }
     }, {
       label: opts.messages.textArea,
@@ -1808,7 +1825,7 @@ function formBuilderEventsFn() {
       // var fieldLabel = _helpers.markup('div', [fieldLabelLabel, fieldLabelInput], {
       //   className: 'form-group label-wrap'
       // });
-      advFields.push(textAttribute('label', values));
+      advFields.push(textAttribute('label', {}, values));
 
       // advFields.push(fieldLabel.outerHTML);
 
@@ -1817,30 +1834,30 @@ function formBuilderEventsFn() {
 
       advFields.push(fieldDescription(values));
 
-      advFields.push(subTypeField(values));
+      advFields.push(subTypeField(values, { hidden: true }));
 
       advFields.push(btnStyles(values.style, values.type));
 
       // Placeholder
-      advFields.push(textAttribute('placeholder', values));
+      advFields.push(textAttribute('placeholder', {}, values));
       // Class
-      advFields.push(textAttribute('className', values));
+      advFields.push(textAttribute('className', { hidden: true }, values));
 
-      advFields.push(textAttribute('name', values));
+      advFields.push(textAttribute('name', { hidden: true }, values));
 
-      advFields.push('<div class="form-group access-wrap"><label>' + opts.messages.roles + '</label>');
+      // advFields.push('<div class="form-group access-wrap"><label>' + opts.messages.roles + '</label>');
 
-      advFields.push('<input type="checkbox" name="enable_roles" value="" ' + (values.role !== undefined ? 'checked' : '') + ' id="enable_roles-' + lastID + '"/> <label for="enable_roles-' + lastID + '" class="roles-label">' + opts.messages.limitRole + '</label>');
-      advFields.push('<div class="available-roles" ' + (values.role !== undefined ? 'style="display:block"' : '') + '>');
+      // advFields.push('<input type="checkbox" name="enable_roles" value="" ' + (values.role !== undefined ? 'checked' : '') + ' id="enable_roles-' + lastID + '"/> <label for="enable_roles-' + lastID + '" class="roles-label">' + opts.messages.limitRole + '</label>');
+      // advFields.push('<div class="available-roles" ' + (values.role !== undefined ? 'style="display:block"' : '') + '>');
+      //
+      // for (key in opts.roles) {
+      //   if ($.inArray(key, ['date', '4']) === -1) {
+      //     advFields.push('<input type="checkbox" name="roles[]" value="' + key + '" id="fld-' + lastID + '-roles-' + key + '" ' + ($.inArray(key, roles) !== -1 ? 'checked' : '') + ' class="roles-field" /><label for="fld-' + lastID + '-roles-' + key + '">' + opts.roles[key] + '</label><br/>');
+      //   }
+      // }
+      // advFields.push('</div></div>');
 
-      for (key in opts.roles) {
-        if ($.inArray(key, ['date', '4']) === -1) {
-          advFields.push('<input type="checkbox" name="roles[]" value="' + key + '" id="fld-' + lastID + '-roles-' + key + '" ' + ($.inArray(key, roles) !== -1 ? 'checked' : '') + ' class="roles-field" /><label for="fld-' + lastID + '-roles-' + key + '">' + opts.roles[key] + '</label><br/>');
-        }
-      }
-      advFields.push('</div></div>');
-
-      advFields.push(textAttribute('maxlength', values));
+      advFields.push(textAttribute('maxlength', {}, values));
 
       return advFields.join('');
     };
@@ -1888,12 +1905,13 @@ function formBuilderEventsFn() {
      * @param  {Object} values
      * @return {String}      markup for type <select> input
      */
-    var subTypeField = function subTypeField(values) {
+    var subTypeField = function subTypeField(values, options) {
       var subTypes = opts.messages.subtypes,
           type = values.type,
           subtype = values.subtype || '',
           subTypeField = '',
           selected = void 0;
+      var visibility = options.hidden ? 'hidden' : '';
 
       if (subTypes[type]) {
         var subTypeLabel = '<label>' + opts.messages.subtype + '</label>';
@@ -1903,7 +1921,7 @@ function formBuilderEventsFn() {
           subTypeField += '<option value="' + element + '" ' + selected + '>' + element + '</option>';
         });
         subTypeField += '</select>';
-        subTypeField = '<div class="form-group subtype-wrap">' + subTypeLabel + ' ' + subTypeField + '</div>';
+        subTypeField = '<div class="form-group subtype-wrap ' + visibility + '">' + subTypeLabel + ' ' + subTypeField + '</div>';
       }
 
       return subTypeField;
@@ -1940,7 +1958,7 @@ function formBuilderEventsFn() {
      * @param  {Object} values
      * @return {String}
      */
-    var textAttribute = function textAttribute(attribute, values) {
+    var textAttribute = function textAttribute(attribute, options, values) {
       var placeholderFields = ['text', 'textarea', 'select'];
       var noName = ['header'];
 
@@ -1977,6 +1995,8 @@ function formBuilderEventsFn() {
         noMakeAttr.push(true);
       }
 
+      var visibility = options.hidden ? 'hidden' : '';
+
       if (!noMakeAttr.some(function (elem) {
         return elem === true;
       })) {
@@ -1988,7 +2008,7 @@ function formBuilderEventsFn() {
           attributefield += '<input type="text" value="' + attrVal + '" name="' + attribute + '" placeholder="' + placeholder + '" class="fld-' + attribute + ' form-control" id="' + attribute + '-' + lastID + '">';
         }
 
-        attributefield = '<div class="form-group ' + attribute + '-wrap">' + attributeLabel + ' ' + attributefield + '</div>';
+        attributefield = '<div class="form-group ' + visibility + ' ' + attribute + '-wrap">' + attributeLabel + ' ' + attributefield + '</div>';
       }
 
       return attributefield;
@@ -2055,6 +2075,8 @@ function formBuilderEventsFn() {
       liContents += '<div id="' + lastID + '-holder" class="frm-holder">';
       liContents += '<div class="form-elements">';
 
+      console.log('VALORES REQ', values);
+      console.log('VALORES REQ RETORNO', requiredField(values));
       liContents += requiredField(values);
 
       if (values.type === 'checkbox') {

@@ -20,7 +20,8 @@ jQuery(document).ready(function($) {
           name: 'phone',
           description: 'How can we reach you?',
           type: 'text'
-        }]
+        }
+      ]
     };
 
   $(template).formBuilder(formBuilderOpts);
